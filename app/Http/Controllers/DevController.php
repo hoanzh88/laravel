@@ -11,8 +11,7 @@ use Illuminate\Http\Request;
 class DevController extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
-    public function index(Request $request)
-    {
-        dd("vao dev");
+    public function index(Request $request){
+        return view('v2.dev.show');
     }
 }
