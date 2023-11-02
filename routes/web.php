@@ -29,3 +29,10 @@ Route::prefix('product')->group(function () {
 	
 	Route::get('/{product_id}/delete', '\App\Http\Controllers\ProductController@destroy')->name('product.delete');	
 });
+
+Route::prefix('users')->group(function () {
+	Route::get('/login', '\App\Http\Controllers\UsersController@getLogin')->name('users.login');
+	Route::post('/login', '\App\Http\Controllers\UsersController@checkLogin')->name('users.login');
+	Route::get('/logout', '\App\Http\Controllers\UsersController@getLogout')->name('users.logout');
+	Route::get('/', '\App\Http\Controllers\UsersController@index')->middleware('checkuserslogin')->name('users.index');
+});

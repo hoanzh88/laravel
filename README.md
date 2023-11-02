@@ -366,14 +366,39 @@ Blade Files: \resources\views\frontend\product\edit.blade.php
     }
 ```
 
-
-### Authentication
-### Permission
-
-### Muti language
 ### API ( token)
+```
+	Client --> post login success --> 
+	Tạo ra 1 token:
+		+ update vào database
+		+ response.token cho Client
+		
+	Client save token & sử dụng cho các lần call api sau
+```
+
+### Authentication -  Permission
+
+Khi user login vào thành công thì sẽ có middleware checkUsersLogin (select table permission join user_permission where route_name) 
+
+## Tạo Các table:
+```
+user
+permission
+user_permission
+```
+
+## Tạo Route
+## Tạo Template
+## Tạo UsersController
+## Tạo Seeding user
+## Tạo middleware
+```php artisan make:middleware checkUsersLogin```
 
 ###  database migrations
+```php artisan migrate log_users_activity```
+
+
+### Muti language
 ###  Session
 ###  Cached
 ###  Transaction
@@ -388,4 +413,5 @@ Blade Files: \resources\views\frontend\product\edit.blade.php
 ##  Overrides class
 ##  Check data logs
 ##  Điều hướng router, view
+##  Dùng muti DB
 
