@@ -399,11 +399,36 @@ user_permission
 
 
 ### Muti language
+```
+/lang
+    /en
+        messages.php
+		
+	/vi
+		messages.php
+```
+
+1. Tạo 1 Middleware localization để setLocale language lấy từ session
+2. routes\web.php bọc middleware localization
+```Route::group(['middleware' => 'localization'], function () { ... });```
+3. Tạo 1 router để change language
+``` Route::get('change-language/{language}', 'LanguageController@changeLanguage')->name('change_language'); ```
+4. Chỗ show
+```
+{{ __('messages.welcome')}}
+<br/>
+{{ __('messages.welcome_you',['yourname'=> 'Mr.Hoan'])}}
+```
+
+### Collection từ lang
+
+
 ###  Session
 ###  Cached
+###  Redis
+
 ###  Transaction
 ###  Middleware
-###  Redis
 ###  Cronjob Scheduler
 ###  Listeners/Events
 
