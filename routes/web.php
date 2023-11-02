@@ -36,5 +36,7 @@ Route::group(['middleware' => 'localization'], function () {
 		Route::get('/logout', '\App\Http\Controllers\UsersController@getLogout')->name('users.logout');
 		Route::get('/', '\App\Http\Controllers\UsersController@index')->middleware('checkuserslogin')->name('users.index');
 	});
+
+	Route::get('collect-language', 'CollectlanguageController@index')->name('collectlanguage.index');
 });
 Route::get('change-language/{language}', 'LanguageController@changeLanguage')->name('change_language');
