@@ -17,3 +17,17 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::group(['prefix' => 'v1', 'namespace' => 'Auth', 'middleware' => 'cors'], function () {
+    Route::post('login', ['as' => 'login', 'uses' => 'AdminLoginController@login']);
+});
+
+Route::group(['prefix' => 'v1', 'namespace' => 'Auth', 'middleware' => 'cors'], function () {
+    Route::post('logout', ['as' => 'logout', 'uses' => 'AdminLoginController@logout']);
+});
+
+Route::group(['prefix' => 'v1', 'namespace' => 'Admin'], function () {
+    Route::group(['prefix' => 'route','middleware' => 'admin.api'], function () {
+        Route::get('admin/list',['as'=>'list.route','uses'=>'AdminAccountController@list']);
+    });
+});

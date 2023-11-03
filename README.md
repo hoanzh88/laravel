@@ -375,6 +375,16 @@ Blade Files: \resources\views\frontend\product\edit.blade.php
 		
 	Client save token & sử dụng cho các lần call api sau
 ```
+app\Http\Controllers\Auth\AdminLoginController.php
+```
+$new_token = md5($userName . date('YmdHis').str_replace([' ','.'],'',microtime()));
+$this->admin->where(['username' => $userName])->update(['api_token' => $new_token]);
+$data = collect(["admin" => $user, "token" => $new_token]);
+return response()->json($data, 200);
+```
+
+app\Http\Middleware\AdminAuthMiddleware.php
+```$token = str_replace('Bearer ', '', $request->header('Authorization'));```
 
 ### Authentication -  Permission
 
@@ -473,7 +483,47 @@ $language = Session::get('language');
 ###  Job queue
 ###  Listeners/Events
 
-### Design pattern
+### Model events
+Link tham khảo: https://laravel.com/docs/5.6/eloquent#events
+``` retrieved, creating, created, updating, updated, saving, saved, deleting, deleted, restoring, restored ```
+
+```
+namespace App\Models\Gotit;
+class CategoryPhysicalGift extends Model
+{
+    public function companyCampaignInfoCategoryPhysicalGift()
+    {
+        return $this->hasMany(CompanyCampaignInfoCategoryPhysicalGift::class);
+    }
+
+    public static function boot() {
+        parent::boot();
+
+        static::creating(function ($model){
+            $model->name_slug = Helpers::convertStringToSlug($model->name_vi);
+            return $model;
+        });
+
+        static::created(function($model) {
+            $model->update(['priortity' => $model->id]);
+        });
+
+        static::updating(function ($model){
+            $data = [];
+            $record = self::find($model->id);
+            $data['previous_content'] = json_encode($record);
+            $data['user_id'] = Auth::id();
+            $data['current_content'] = json_encode($model);
+            $data['request_data'] = json_encode(request()->all());
+            $data['type'] = $model->getTable();
+            HomeDeliveryAdminLog::create($data);
+
+            $model->name_slug = Helpers::convertStringToSlug($model->name_vi);
+            return $model;
+        });
+    }
+}
+```
 
 ### Other
 ##  Overrides class
@@ -481,3 +531,4 @@ $language = Session::get('language');
 ##  Điều hướng router, view
 ##  Dùng muti DB
 
+### Design pattern
