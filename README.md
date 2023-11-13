@@ -384,7 +384,9 @@ return response()->json($data, 200);
 ```
 
 app\Http\Middleware\AdminAuthMiddleware.php
-```$token = str_replace('Bearer ', '', $request->header('Authorization'));```
+```
+$token = str_replace('Bearer ', '', $request->header('Authorization'));
+```
 
 ### Authentication -  Permission
 
@@ -523,6 +525,21 @@ class CategoryPhysicalGift extends Model
         });
     }
 }
+```
+### Dùng Constants đã define
+```
+	public function getClassConstants()
+	{
+		$array = [];
+		$reflect = new \ReflectionClass(get_class($this));
+		$consArr = $reflect->getConstants();
+		foreach ($consArr as $key => $val) {
+			if (is_numeric($val) && $val >= 1) {
+				$array[$key] = $val;
+			}
+		}
+		return $array;
+	}
 ```
 
 ### Other
