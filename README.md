@@ -478,6 +478,40 @@ $language = Session::get('language');
 ```
 
 ###  Cached
+## Config / install
+```config/cache.php```
+## use
+```
+use Illuminate\Support\Facades\Cache;
+ $cache_name = $this->getCacheKey($query_new , '_counttotal');
+if(!empty($this->reset_cache_data)){
+    $this->clearCacheByKey($cache_name);
+}
+if (Cache::has($cache_name)) {
+    $this->pagination_total = Cache::get($cache_name);
+} else {
+    $pagination_total = $builder->getCountForPagination();
+    $this->pagination_total = $pagination_total;
+    Cache::remember($cache_name, ConvertToSingleSqlHelper::CACHE_TIME_30_MINUTES, function () use($pagination_total) {
+        return $pagination_total;
+    });
+}
+-------------------------------------------------------
+if (Cache::has('trans_failed_'.$company->company_id)) {
+    //Do nothing
+    $this->logger->info($messageLog." Has cache already! ".json_encode(Cache::get('trans_failed_'.$company->company_id)));
+}
+else {
+    $expiresAt = Carbon::now()->addMinutes(60);
+    Cache::put('trans_failed_'.$company->company_id, '1', $expiresAt);
+    $this->logger->info($messageLog.' Added cache!');
+}
+-------------------------------------------------------
+$permissions = Cache::remember('permissions', 1440, function () {
+    return \DB::select('select * from permission p');
+});
+
+```
 ###  Redis
 ###  Transaction
 
@@ -549,3 +583,47 @@ class CategoryPhysicalGift extends Model
 ##  Dùng muti DB
 
 ### Design pattern
+
+
+### export_csv
+$headerCSV = [
+	'STT',
+	'Thời gian trúng giải',
+	'Mã sản phẩm',
+	'Số điện thoại khách',
+	'Giải',
+	'Mã nhân viên',
+	'Số điện thoại PG',
+	'Id cửa hàng',
+];
+$usersList = $this->usersModel->getReport105([
+	'campaign_id' => $campaign_id,
+	'phone' => $phone,
+	'sku' => $sku,
+	'order' => 'DESC'
+]); 
+					
+function export_csv_json_report_105(response, filename) {
+    var json = response.usersList;
+    var csv = [];
+    csv[0] = response.headerCSV;
+    for (var i = 0; i < json.length; i++) {
+        var row = [];
+        row[0] = i+1;
+        if(json[i].user_order_prize_created_at){
+            row[1] = "'" + json[i].user_order_prize_created_at;
+        }else{
+            row[1] = '';
+        }
+        
+        row[2] = json[i].users_order_sku_sku;
+        row[3] = "'" + json[i].client_phone;
+        row[4] = json[i].user_order_prize_prize_name;
+        row[5] = json[i].pg_unique_code;
+        row[6] = "'" + json[i].pg_phone;
+
+        row[7] = json[i].supermarket_code;
+        csv.push(row.join(","));
+    }
+    download_csv(csv.join("\n"), filename);
+}
